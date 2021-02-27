@@ -11,10 +11,6 @@ contract Marketplace {
         string image;
         string postalAddress;
         uint price;
-        fixed surface;
-        string type;
-        uint room;
-        string description;
         address payable owner;
         bool purchased;
     }
@@ -25,10 +21,6 @@ contract Marketplace {
         string image,
         string postalAddress,
         uint price,
-        fixed surface,
-        string type,
-        uint room,
-        string description,
         address payable owner,
         bool purchased
     );
@@ -39,10 +31,6 @@ contract Marketplace {
         string image,
         string postalAddress,
         uint price,
-        fixed surface,
-        string type,
-        uint room,
-        string description,
         address payable owner,
         bool purchased
     );
@@ -71,9 +59,9 @@ contract Marketplace {
         // Increment product count
         productCount ++;
         // Create the product
-        products[productCount] = Product(productCount, _name, _image, _postalAddress, _price, _surface, _type, _room, _description, msg.sender, false);
+        products[productCount] = Product(productCount, _name, _image, _postalAddress, _price, msg.sender, false);
         // Trigger an event
-        emit ProductCreated(productCount, _name, _image, _postalAddress, _price, _surface, _type, _room, _description, msg.sender, false);
+        emit ProductCreated(productCount, _name, _image, _postalAddress, _price, msg.sender, false);
     }
 
     function purchaseProduct(uint _id) public payable {
@@ -98,6 +86,6 @@ contract Marketplace {
         // Pay the seller by sending them Ether
         address(_seller).transfer(msg.value);
         // Trigger an event
-        emit ProductPurchased(productCount, _product.name, _product.image, _product.postalAddress, _product.price, _product.surface, _product.type, _product.room, _product.description, msg.sender, true);
+        emit ProductPurchased(productCount, _product.name, _product.image, _product.postalAddress, _product.price, msg.sender, true);
     }
 }
