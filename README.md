@@ -52,7 +52,7 @@ Maintenant, exécutons les migrations comme ceci :
 
 `$ truffle migrate`
 
-Remarque : Après des modifications des variables vous devez reset les migrations pour que vos modifications soit prise en compte : $ truffle migrate –reset
+Remarque : Après des modifications des variables vous devez reset les migrations pour que vos modifications soit prise en compte : `$ truffle migrate –reset`
 
 Maintenant, il faut démarre l’application ReactJS pour pouvoir interagir via un interface web avec nos contrats. Dans cette interface, nous pouvons ajouter ou acheter des biens.
 
