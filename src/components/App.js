@@ -113,7 +113,7 @@ class App extends Component {
         this.setState({ loading: true })
         this.state.marketplace.methods.setPrice(id,newPrice).send({ from: this.state.account })
             .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
+                window.alert("Tu n'est pas propriétaire du bien ou le pix doit etre superieur a 10")
             })
             .on('receipt', function(receipt) {
                 console.log(receipt)
@@ -164,6 +164,9 @@ class App extends Component {
     BuyEstate(id , price) {
         this.setState({ loading: true })
         this.state.marketplace.methods.BuyEstate(id).send({ from: this.state.account , value: price })
+            .on('error', function(error){
+                window.alert("n'est pas en vente ou Manque de l'argent")
+            })
             .on('receipt', function(receipt) {
                 console.log(receipt)
                 this.setState({ loading: false })
@@ -187,6 +190,9 @@ class App extends Component {
     getEstateById(id) {
         this.setState({ loading: true })
         this.state.marketplace.methods.getEstateById(id).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("Estate inconnu")
+            })
             .on('receipt', function(receipt) {
                 console.log(receipt)
                 this.setState({ loading: false })
