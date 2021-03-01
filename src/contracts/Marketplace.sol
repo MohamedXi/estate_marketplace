@@ -1,91 +1,96 @@
-pragma solidity ^0.5.0;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.5.0 <0.8.0;
+pragma experimental ABIEncoderV2;
 
 contract Marketplace {
-    string public name;
-    uint public productCount = 0;
-    mapping(uint => Product) public products;
-
-    struct Product {
-        uint id;
-        string name;
-        string image;
-        string postalAddress;
-        uint price;
-        address payable owner;
-        bool purchased;
+    struct estate {
+        string _name;
+        string _postalAddress;
+        string[] _images;
+        uint _price;
+        address payable _ownerEstate;
+        bool _selling;
     }
 
-    event ProductCreated(
-        uint id,
-        string name,
-        string image,
-        string postalAddress,
-        uint price,
-        address payable owner,
-        bool purchased
-    );
+    string[] _sales;
+    address payable _owner;
+    estate[] _estates;
 
-    event ProductPurchased(
-        uint id,
-        string name,
-        string image,
-        string postalAddress,
-        uint price,
-        address payable owner,
-        bool purchased
-    );
+    mapping(address => uint[]) _ownerEstate;
+    mapping(uint => estate) _idEstate;
 
     constructor() public {
-        name = "Supinfo Marketplace";
+        _owner = msg.sender;
     }
 
-    function createProduct(
-        string memory _name,
-        string memory _image,
-        string memory _postalAddress,
-        uint _price,
-        fixed _surface,
-        string memory _type,
-        uint _room,
-        string memory _description) public {
-        // Require a valid name
-        require(bytes(_name).length > 0);
-        // Require a valid image url
-        require(bytes(_image).length > 0);
-        // Require a valid postal address
-        require(bytes(_postalAddress).length > 0);
-        // Require a valid price
-        require(_price > 0);
-        // Increment product count
-        productCount ++;
-        // Create the product
-        products[productCount] = Product(productCount, _name, _image, _postalAddress, _price, msg.sender, false);
-        // Trigger an event
-        emit ProductCreated(productCount, _name, _image, _postalAddress, _price, msg.sender, false);
+
+    function createEstate(string memory nom, string memory adres, uint price, string[] memory img) public {
+        require(price > 10, "le prix doit etre superieur a 10");
+        estate memory create = estate(nom, adres, img, price, msg.sender, false);
+        _estates.push(create);
+        uint id = _estates.length - 1;
+        _idEstate[id] = create;
+        _ownerEstate[msg.sender].push(id);
     }
 
-    function purchaseProduct(uint _id) public payable {
-        // Fetch the product
-        Product memory _product = products[_id];
-        // Fetch the owner
-        address payable _seller = _product.owner;
-        // Make sure the product has a valid id
-        require(_product.id > 0 && _product.id <= productCount);
-        // Require that there is enough Ether in the transaction
-        require(msg.value >= _product.price);
-        // Require that the product has not been purchased already
-        require(!_product.purchased);
-        // Require that the buyer is not the seller
-        require(_seller != msg.sender);
-        // Transfer ownership to the buyer
-        _product.owner = msg.sender;
-        // Mark as purchased
-        _product.purchased = true;
-        // Update the product
-        products[_id] = _product;
-        // Pay the seller by sending them Ether
-        address(_seller).transfer(msg.value);
-        // Trigger an event
-        emit ProductPurchased(productCount, _product.name, _product.image, _product.postalAddress, _product.price, msg.sender, true);
+    function setEstateSale(uint id) public {
+        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
+        _estates[id]._selling = true;
+    }
+
+    function setPrice(uint id, uint newPrice) public {
+        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
+        _estates[id]._price = newPrice;
+    }
+
+    function setPostalAddress(uint id, string memory newPostalAddress) public {
+        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
+        _estates[id]._postalAddress = newPostalAddress;
+    }
+
+    function setName(uint id, string memory newName) public {
+        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
+        _estates[id]._name = newName;
+    }
+
+    function cancelEstateSale(uint id) public {
+        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
+        _estates[id]._selling = false;
+    }
+
+    function BuyEstate(uint id) public payable {
+        require(_estates[id]._selling, "n'est pas en vente");
+
+        address payable seller = _estates[id]._ownerEstate;
+
+        uint price = _estates[id]._price;
+
+        require(msg.value >= price, 'Manque de la thune');
+
+        uint commission = msg.value / 10;
+        uint sale = msg.value - commission;
+
+        seller.transfer(sale);
+        _owner.transfer(commission);
+
+        _estates[id]._ownerEstate = msg.sender;
+        _estates[id]._selling = false;
+    }
+
+    function getAllEstates() public view returns (estate[] memory){
+        return _estates;
+    }
+
+    function getEstateByAddress(address addr) public view returns (estate[] memory){
+        estate[] memory estatesList;
+        uint[] memory estateIds = _ownerEstate[addr];
+        for (uint i = 0; i < estateIds.length; i++) {
+            estatesList[i] = _idEstate[estateIds[i]];
+        }
+        return estatesList;
+    }
+
+    function getEstateById(uint id) public view returns (estate memory){
+        return _idEstate[id];
     }
 }
