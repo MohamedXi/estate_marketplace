@@ -10297,12 +10297,13 @@
         }
       },
       "links": {},
-      "address": "0x5702921f3616aBfFA918cd053fd63747f9ED01a9",
-      "transactionHash": "0xe14f9f9b9e28b99459b384b0309bb91f7417798a96fc2c381aae43b18ac1964a"
+      "address": "0x252aE87025fEE770651e5a21973097c32663CE18",
+      "transactionHash": "0x5481b8feefed66ba1aa4df1a5c2cc3e7616afa4d31d3baf515648b31cdddd107"
     }
   },
-  "schemaVersion": "3.0.2",
-  "updatedAt": "2021-03-01T17:06:08.509Z",
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2021-03-01T17:49:17.530Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },

@@ -34,15 +34,32 @@ class App extends Component {
         if (networkData) {
             const marketplace = web3.eth.Contract(Marketplace.abi, networkData.address)
             this.setState({ marketplace })
-            const productCount = await marketplace.methods.productCount().call()
-            this.setState({ productCount })
-                // Load products
-            for (var i = 1; i <= productCount; i++) {
-                const product = await marketplace.methods.products(i).call()
-                this.setState({
-                    products: [...this.state.products, product]
+
+            //test
+            this.state.marketplace.methods.createEstate("name3", "adress2", 1 , ["url11", "url21"]).send({ from: this.state.account })
+                .on('error', function(error){
+                    window.alert("le prix doit etre superieur a 10")
+                 })
+                .on('receipt', function(receipt) {
+                    console.log(receipt)
+                    this.setState({ loading: false })
                 })
-            }
+
+            const productCount = await marketplace.methods.getAllEstates().call()
+
+            console.log(productCount)
+            //fin test
+
+            //comenter car cela me bloqué
+
+            //this.setState({ productCount })
+            // Load products
+            //for (var i = 1; i <= productCount; i++) {
+            //    const product = await marketplace.methods.products(i).call()
+            //    this.setState({
+            //        products: [...this.state.products, product]
+            //    })
+            //}
             this.setState({ loading: false })
         } else {
             window.alert('Marketplace contract not deployed to detected network.')
@@ -58,22 +75,118 @@ class App extends Component {
             loading: true
         }
 
-        this.createProduct = this.createProduct.bind(this)
-        this.purchaseProduct = this.purchaseProduct.bind(this)
-    }
+        // j'ai commenter ceci car cela bloquai le code
 
-    createProduct(name, price, image, address) {
+        //this.createEstate = this.createProduct.bind(this)
+        //this.setEstateSale = this.purchaseProduct.bind(this)
+    }
+    
+    // creation d'un bien ( estate )
+    // string , int , list string[ ], string
+    createEstate(name, price, image, address) {
         this.setState({ loading: true })
-        this.state.marketplace.methods.createProduct(name, image, address, price).send({ from: this.state.account })
+        this.state.marketplace.methods.createEstate( name, address, price, image ).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("le prix doit etre superieur a 10")
+            })
             .on('receipt', function(receipt) {
                 console.log(receipt)
                 this.setState({ loading: false })
             })
     }
-
-    purchaseProduct(id, price) {
+    // mettre en vente un bien
+    // int 
+    setEstateSale(id) {
         this.setState({ loading: true })
-        this.state.marketplace.methods.purchaseProduct(id).send({ from: this.state.account, value: price })
+        this.state.marketplace.methods.setEstateSale(id).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("Tu n'est pas propriétaire du bien")
+            })
+            .on('receipt', function(receipt) {
+                console.log(receipt)
+                this.setState({ loading: false })
+            })
+    }
+    // changer le prix a un bien ( estate )
+    // int , int
+    setPrice(id, newPrice) {
+        this.setState({ loading: true })
+        this.state.marketplace.methods.setPrice(id,newPrice).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("Tu n'est pas propriétaire du bien")
+            })
+            .on('receipt', function(receipt) {
+                console.log(receipt)
+                this.setState({ loading: false })
+            })
+    }
+    // changer l'adresse postal d'un bien
+    // int , string
+    setPostalAddress(id,newPostalAddress) {
+        this.setState({ loading: true })
+        this.state.marketplace.methods.setPostalAddress(id,newPostalAddress).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("Tu n'est pas propriétaire du bien")
+            })
+            .on('receipt', function(receipt) {
+                console.log(receipt)
+                this.setState({ loading: false })
+            })
+    }
+    // changer le nom d'un bien
+    // int , string
+    setName(id,newName) {
+        this.setState({ loading: true })
+        this.state.marketplace.methods.setName(id,newName).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("Tu n'est pas propriétaire du bien")
+            })
+            .on('receipt', function(receipt) {
+                console.log(receipt)
+                this.setState({ loading: false })
+            })
+    }
+    // annuler la vente d'un bien ( estate )
+    // int
+    cancelEstateSale(id) {
+        this.setState({ loading: true })
+        this.state.marketplace.methods.cancelEstateSale(id).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("Tu n'est pas propriétaire du bien")
+            })
+            .on('receipt', function(receipt) {
+                console.log(receipt)
+                this.setState({ loading: false })
+            })
+    }
+    // acheter un bien
+    // int , int
+    BuyEstate(id , price) {
+        this.setState({ loading: true })
+        this.state.marketplace.methods.BuyEstate(id).send({ from: this.state.account , value: price })
+            .on('receipt', function(receipt) {
+                console.log(receipt)
+                this.setState({ loading: false })
+            })
+    }
+    // rechercher les biens d'une adresse (utilisateur)
+    // string
+    getEstateByAddress(address) {
+        this.setState({ loading: true })
+        this.state.marketplace.methods.getEstateByAddress(address).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("Propriétaire inconu")
+            })
+            .on('receipt', function(receipt) {
+                console.log(receipt)
+                this.setState({ loading: false })
+            })
+    }
+    // rechercher un bien selon son id
+    // int
+    getEstateById(id) {
+        this.setState({ loading: true })
+        this.state.marketplace.methods.getEstateById(id).send({ from: this.state.account })
             .on('receipt', function(receipt) {
                 console.log(receipt)
                 this.setState({ loading: false })

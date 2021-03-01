@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 
 contract Marketplace {
     struct estate {
+        uint _id;
         string _name;
         string _postalAddress;
         string[] _images;
@@ -26,15 +27,16 @@ contract Marketplace {
 
     function createEstate(string memory nom, string memory adres, uint price, string[] memory img) public {
         require(price > 10, "le prix doit etre superieur a 10");
-        estate memory create = estate(nom, adres, img, price, msg.sender, false);
-        _estates.push(create);
         uint id = _estates.length - 1;
+        estate memory create = estate(id, nom, adres, img, price, msg.sender, false);
+        _estates.push(create);
         _idEstate[id] = create;
         _ownerEstate[msg.sender].push(id);
     }
 
     function setEstateSale(uint id) public {
         require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
+        require(price > 10, "le prix doit etre superieur a 10");
         _estates[id]._selling = true;
     }
 
@@ -65,7 +67,7 @@ contract Marketplace {
 
         uint price = _estates[id]._price;
 
-        require(msg.value >= price, 'Manque de la thune');
+        require(msg.value >= price, 'Manque de l'argent');
 
         uint commission = msg.value / 10;
         uint sale = msg.value - commission;
