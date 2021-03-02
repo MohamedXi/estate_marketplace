@@ -18,7 +18,7 @@ class Main extends Component {
                                 const image = this.estateImage.value
                                 const address = this.estatePostalAddress.value
                                 const price = window.web3.utils.toWei(this.estatePrice.value.toString(), 'Ether')
-                                this.props.createProduct(name, price, image, address)
+                                //this.props.createProduct(name, price, image, address)
                             }}>
                                 <div className="col-md-6">
                                     <input
