@@ -12,8 +12,14 @@ import {
 } from "react-router-dom";
 import Home from "./Home";
 import Estates from "./Estates";
+import MyEstates from "./MyEstates";
 
 class App extends Component {
+
+    async componentDidMount() {
+        await this.loadWeb3()
+        await this.loadAccount()
+    }
 
     constructor(props) {
         super(props)
@@ -43,75 +49,65 @@ class App extends Component {
         this.setState({account: accounts[0]})
     }
 
-        // j'ai commenter ceci car cela bloquai le code
+    // j'ai commenter ceci car cela bloquai le code
 
-        //this.createEstate = this.createProduct.bind(this)
-        //this.setEstateSale = this.purchaseProduct.bind(this)
-    }
-    
-    // creation d'un bien ( estate )
-    // string , int , list string[ ], string
-    createEstate(name, price, image, address) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.createEstate( name, address, price, image ).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("le prix doit etre superieur a 10")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
+    //this.createEstate = this.createProduct.bind(this)
+    //this.setEstateSale = this.purchaseProduct.bind(this)
+
+
     // acheter un bien
     // int , int
-    buyEstate(id , price) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.buyEstate(id).send({ from: this.state.account , value: price })
-            .on('error', function(error){
+    buyEstate(id, price) {
+        this.setState({loading: true})
+        this.state.marketplace.methods.buyEstate(id).send({from: this.state.account, value: price})
+            .on('error', function (error) {
                 window.alert("n'est pas en vente ou Manque de l'argent")
             })
-            .on('receipt', function(receipt) {
+            .on('receipt', function (receipt) {
                 console.log(receipt)
-                this.setState({ loading: false })
+                this.setState({loading: false})
             })
     }
+
     // update un bien (selling c'est si il est en vente ou non )
     // int, string, string, uint, bool, string[] 
-    updateEstate(id,newName,newPostalAddress,newPrice,newSelling,newImages) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.updateEstate(id,newName,newPostalAddress,newPrice,newSelling,newImages).send({ from: this.state.account })
-            .on('error', function(error){
+    updateEstate(id, newName, newPostalAddress, newPrice, newSelling, newImages) {
+        this.setState({loading: true})
+        this.state.marketplace.methods.updateEstate(id, newName, newPostalAddress, newPrice, newSelling, newImages).send({from: this.state.account})
+            .on('error', function (error) {
                 window.alert("tu n'est pas propriétaire ou le prix doit etre superieur a 10")
             })
-            .on('receipt', function(receipt) {
+            .on('receipt', function (receipt) {
                 console.log(receipt)
-                this.setState({ loading: false })
+                this.setState({loading: false})
             })
     }
+
     // rechercher les biens d'une adresse (utilisateur)
     // string
     getEstateByAddress(address) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.getEstateByAddress(address).send({ from: this.state.account })
-            .on('error', function(error){
+        this.setState({loading: true})
+        this.state.marketplace.methods.getEstateByAddress(address).send({from: this.state.account})
+            .on('error', function (error) {
                 window.alert("Propriétaire inconu")
             })
-            .on('receipt', function(receipt) {
+            .on('receipt', function (receipt) {
                 console.log(receipt)
-                this.setState({ loading: false })
+                this.setState({loading: false})
             })
     }
+
     // rechercher un bien selon son id
     // int
     getEstateById(id) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.getEstateById(id).send({ from: this.state.account })
-            .on('error', function(error){
+        this.setState({loading: true})
+        this.state.marketplace.methods.getEstateById(id).send({from: this.state.account})
+            .on('error', function (error) {
                 window.alert("Estate inconnu")
             })
-            .on('receipt', function(receipt) {
+            .on('receipt', function (receipt) {
                 console.log(receipt)
-                this.setState({ loading: false })
+                this.setState({loading: false})
             })
     }
 
@@ -121,6 +117,7 @@ class App extends Component {
                 <Router>
                     <Navbar account={this.state.account}/>
                     <Switch>
+                        <Route exact path="/myestates" component={MyEstates}/>}/>
                         <Route exact path="/create" component={Create}/>}/>
                         <Route exact path="/estates" component={Estates}/>}/>
                         <Route exact path="/" component={Home}/>}/>

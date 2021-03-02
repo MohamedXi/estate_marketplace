@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-import Truncate from "react-truncate";
 import Web3 from "web3";
 import Marketplace from "../abis/Marketplace.json";
+import Truncate from "react-truncate";
 
-class Estates extends Component {
-
+class MyEstates extends Component {
     async componentWillMount() {
         await this.loadWeb3()
         await this.loadAccount()
@@ -48,7 +47,7 @@ class Estates extends Component {
         if (networkData) {
             const marketplace = new web3.eth.Contract(Marketplace.abi, networkData.address)
             this.setState({marketplace})
-            const estateCount = await marketplace.methods.getAllEstates().call()
+            const estateCount = await marketplace.methods.getEstateByAddress(this.state.account).call()
             // this.setState({estateCount})
             this.setState({
                 estates: estateCount
@@ -67,7 +66,7 @@ class Estates extends Component {
             <div>
                 <div className="album py-5">
                     <div className="container">
-                        <h2 className="fw-light">List of properties</h2>
+                        <h2 className="fw-light">My estates</h2>
                         <p className="lead text-muted">Please add a new property via the form below. Your properties
                             will be visible to all users of the platform.<br/>
                             For your security, please do not reveal your private key.</p>
@@ -179,4 +178,4 @@ class Estates extends Component {
     }
 }
 
-export default Estates;
+export default MyEstates;

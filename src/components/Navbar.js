@@ -22,7 +22,10 @@ class Navbar extends Component {
                           <Link className="nav-link " to="/create">Create</Link>
                       </li>
                       <li className="nav-item">
-                          <Link className="nav-link " to="/estates">Estates list</Link>
+                          <Link className="nav-link " to="/estates">Marketplace</Link>
+                      </li>
+                      <li className="nav-item">
+                          <Link className="nav-link " to="/myestates">My Estates</Link>
                       </li>
                   </ul>
                   <span className="navbar-text small">

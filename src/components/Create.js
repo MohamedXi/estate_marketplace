@@ -1,7 +1,13 @@
 import React, {Fragment, Component} from 'react';
 import Marketplace from "../abis/Marketplace.json";
+import Web3 from "web3";
 
 class Create extends Component {
+    async componentWillMount() {
+        await this.loadWeb3()
+        await this.loadAccount()
+        await this.loadBlockchainData()
+    }
 
     constructor(props) {
         super(props)
@@ -15,16 +21,32 @@ class Create extends Component {
         this.createEstate = this.createEstate.bind(this)
     }
 
-    async loadBlockchainData() {
-        /*
-        const web3 = window.web3
+    loadWeb3 = async () => {
+        if (window.ethereum) {
+            window.web3 = new Web3(window.ethereum)
+            await window.ethereum.enable()
+        } else if (window.web3) {
+            window.web3 = new Web3(window.web3.currentProvider)
+        } else {
+            window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+        }
+    }
 
+    loadAccount = async () => {
+        const web3 = window.web3
+        // Load account
+        const accounts = await web3.eth.getAccounts()
+        this.setState({account: accounts[0]})
+    }
+
+    async loadBlockchainData() {
+        const web3 = window.web3
         const networkId = await web3.eth.net.getId()
         const networkData = Marketplace.networks[networkId]
         if (networkData) {
             const marketplace = new web3.eth.Contract(Marketplace.abi, networkData.address)
             this.setState({marketplace})
-            const estateCount = await marketplace.methods.estateCount().call()
+            const estateCount = await marketplace.methods.getAllEstates().call()
             this.setState({estateCount})
             // Load estates
             for (var i = 1; i <= estateCount; i++) {
@@ -37,19 +59,19 @@ class Create extends Component {
         } else {
             window.alert('Marketplace contract not deployed to detected network.')
         }
-         */
     }
 
-    async componentWillMount() {
-        await this.loadBlockchainData()
-    }
-
-    createEstate(name, price, image, address) {
+    // creation d'un bien ( estate )
+    // string , int , list string[ ], string
+    createEstate = (name, price, image, address) => {
         this.setState({loading: true})
-        this.state.estates.methods.createEstate(name, image, address, price).send({from: this.state.account})
+        this.state.marketplace.methods.createEstate(name, address, price, image).send({from: this.state.account})
+            .on('error', function (error) {
+                window.alert("le prix doit etre superieur a 10")
+            })
             .on('receipt', function (receipt) {
                 console.log(receipt)
-                this.setState({ loading: false })
+                this.setState({loading: false})
             })
     }
 
@@ -67,9 +89,10 @@ class Create extends Component {
                                 event.preventDefault()
                                 const name = this.estateName.value
                                 const image = this.estateImage.value
+                                const images = [image]
                                 const address = this.estatePostalAddress.value
                                 const price = window.web3.utils.toWei(this.estatePrice.value.toString(), 'Ether')
-                                this.props.createEstate(name, price, image, address)
+                                this.createEstate(name, price, images, address)
                             }}>
                                 <div className="col-md-6">
                                     <input
