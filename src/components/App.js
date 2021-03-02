@@ -94,78 +94,26 @@ class App extends Component {
                 this.setState({ loading: false })
             })
     }
-    // mettre en vente un bien
-    // int 
-    setEstateSale(id) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.setEstateSale(id).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // changer le prix a un bien ( estate )
-    // int , int
-    setPrice(id, newPrice) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.setPrice(id,newPrice).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien ou le pix doit etre superieur a 10")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // changer l'adresse postal d'un bien
-    // int , string
-    setPostalAddress(id,newPostalAddress) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.setPostalAddress(id,newPostalAddress).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // changer le nom d'un bien
-    // int , string
-    setName(id,newName) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.setName(id,newName).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // annuler la vente d'un bien ( estate )
-    // int
-    cancelEstateSale(id) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.cancelEstateSale(id).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
     // acheter un bien
     // int , int
-    BuyEstate(id , price) {
+    buyEstate(id , price) {
         this.setState({ loading: true })
-        this.state.marketplace.methods.BuyEstate(id).send({ from: this.state.account , value: price })
+        this.state.marketplace.methods.buyEstate(id).send({ from: this.state.account , value: price })
             .on('error', function(error){
                 window.alert("n'est pas en vente ou Manque de l'argent")
+            })
+            .on('receipt', function(receipt) {
+                console.log(receipt)
+                this.setState({ loading: false })
+            })
+    }
+    // update un bien (selling c'est si il est en vente ou non )
+    // int, string, string, uint, bool, string[] 
+    updateEstate(id,newName,newPostalAddress,newPrice,newSelling,newImages) {
+        this.setState({ loading: true })
+        this.state.marketplace.methods.updateEstate(id,newName,newPostalAddress,newPrice,newSelling,newImages).send({ from: this.state.account })
+            .on('error', function(error){
+                window.alert("tu n'est pas propriétaire ou le prix doit etre superieur a 10")
             })
             .on('receipt', function(receipt) {
                 console.log(receipt)
