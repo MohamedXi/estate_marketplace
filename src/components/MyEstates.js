@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Web3 from "web3";
 import Marketplace from "../abis/Marketplace.json";
 import Truncate from "react-truncate";
+import {Link} from "react-router-dom";
 
 class MyEstates extends Component {
     async componentWillMount() {
@@ -75,13 +76,24 @@ class MyEstates extends Component {
                             {
                                 this.state.estates.map((estate, key) => {
                                     return (
-                                        <div className="col-sm-6 col-lg-4 mb-4">
-                                            <div key={key} className="card border-0 shadow-sm">
+                                        <div key={key} className="col-sm-6 col-lg-4 mb-4">
+                                            <div className="card border-0 shadow-sm">
                                                 <img
                                                     src="https://q-xx.bstatic.com/images/hotel/max1024x768/168/168025344.jpg"
                                                     className="card-img-top" alt="..."/>
                                                 <div className="card-body">
-                                                    <h5 className="card-title mb-1">{estate._name}</h5>
+                                                    <h5 className="card-title mb-1">
+                                                        <p>
+                                                            {
+                                                                (estate._selling === true)
+                                                                    ? <span
+                                                                        className="badge badge-success">Published</span>
+                                                                    : <span
+                                                                        className="badge badge-info">Not Published</span>
+                                                            }
+                                                        </p>
+                                                        {estate._name}
+                                                    </h5>
                                                     <h6 className="card-title mb-3">Price
                                                         : {window.web3.utils.fromWei(estate._price.toString(), 'Ether')} Eth</h6> {/*{window.web3.utils.fromWei(estate.price.toString(), 'Ether')}*/}
                                                     <p className="card-subtitle mb-2 text-muted small">
@@ -132,19 +144,11 @@ class MyEstates extends Component {
                                                                 : <></>
                                                         }
                                                         */}
-                                                        {
-                                                            (estate._selling === true)
-                                                                ? <div className="col-12 mt-2">
-                                                                    <button className="btn btn-sm btn-primary btn-block">
-                                                                        Buy Now
-                                                                    </button>
-                                                                </div>
-                                                                : <button disabled
-                                                                          className="btn btn-sm btn-secondary btn-block">
-                                                                    Unavailable
-                                                                </button>
-                                                        }
-
+                                                        <div className="col-12 mt-2">
+                                                            <Link to={"/edit/" + estate._id} className="btn btn-sm btn-primary btn-block">
+                                                                Edit Estate
+                                                            </Link>
+                                                        </div>
                                                     </div>
                                                     {/*
                                         {!estate.purchased

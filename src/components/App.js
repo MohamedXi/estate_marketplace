@@ -13,6 +13,7 @@ import {
 import Home from "./Home";
 import Estates from "./Estates";
 import MyEstates from "./MyEstates";
+import Edit from "./Edit";
 
 class App extends Component {
 
@@ -69,20 +70,6 @@ class App extends Component {
             })
     }
 
-    // update un bien (selling c'est si il est en vente ou non )
-    // int, string, string, uint, bool, string[] 
-    updateEstate(id, newName, newPostalAddress, newPrice, newSelling, newImages) {
-        this.setState({loading: true})
-        this.state.marketplace.methods.updateEstate(id, newName, newPostalAddress, newPrice, newSelling, newImages).send({from: this.state.account})
-            .on('error', function (error) {
-                window.alert("tu n'est pas propriétaire ou le prix doit etre superieur a 10")
-            })
-            .on('receipt', function (receipt) {
-                console.log(receipt)
-                this.setState({loading: false})
-            })
-    }
-
     // rechercher les biens d'une adresse (utilisateur)
     // string
     getEstateByAddress(address) {
@@ -117,6 +104,7 @@ class App extends Component {
                 <Router>
                     <Navbar account={this.state.account}/>
                     <Switch>
+                        <Route exact path="/edit/:id" component={Edit}/>}/>
                         <Route exact path="/myestates" component={MyEstates}/>}/>
                         <Route exact path="/create" component={Create}/>}/>
                         <Route exact path="/estates" component={Estates}/>}/>

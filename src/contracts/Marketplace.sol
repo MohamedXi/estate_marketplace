@@ -27,7 +27,7 @@ contract Marketplace {
 
     function createEstate(string memory nom, string memory adres, uint price, string[] memory img) public {
         require(price > 10, "le prix doit etre superieur a 10");
-        uint id = _estates.length - 1;
+        uint id = _estates.length;
         estate memory create = estate(id, nom, adres, img, price, msg.sender, false);
         _estates.push(create);
         _idEstate[id] = create;
@@ -72,8 +72,8 @@ contract Marketplace {
     }
 
     function getEstateByAddress(address addr) public view returns (estate[] memory){
-        estate[] memory estatesList;
         uint[] memory estateIds = _ownerEstate[addr];
+        estate[] memory estatesList = new estate[](estateIds.length);
         for (uint i = 0; i < estateIds.length; i++) {
             estatesList[i] = _idEstate[estateIds[i]];
         }
