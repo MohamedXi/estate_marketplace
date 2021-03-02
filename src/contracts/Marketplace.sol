@@ -34,6 +34,7 @@ contract Marketplace {
         _ownerEstate[msg.sender].push(id);
     }
 
+
     function updateEstate(uint id, string memory newName, string memory newPostalAddress, uint newPrice, bool newSelling, string[] memory newImages) public{
         require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
         require( newPrice > 10, "le prix doit etre superieur a 10" );
@@ -53,7 +54,8 @@ contract Marketplace {
 
         uint price = _estates[id]._price;
 
-        require(msg.value >= price, "Manque de l'argent");
+
+        require(msg.value >= price, 'Manque de l\'argent');
 
         uint commission = msg.value / 10;
         uint sale = msg.value - commission;

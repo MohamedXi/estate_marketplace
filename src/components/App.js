@@ -1,19 +1,31 @@
-import React, { Component, Fragment } from 'react';
+import React, {useEffect, useState, Fragment, Component} from 'react';
 import Web3 from 'web3'
-import logo from '../logo.png';
 import './App.css';
 import Marketplace from '../abis/Marketplace.json'
 import Navbar from './Navbar'
-import Main from './Main'
+import Create from './Create'
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
+import Home from "./Home";
+import Estates from "./Estates";
 
 class App extends Component {
 
-    async componentWillMount() {
-        await this.loadWeb3()
-        await this.loadBlockchainData()
+    constructor(props) {
+        super(props)
+        this.state = {
+            account: '',
+            estateCount: 0,
+            estates: [],
+            loading: true
+        }
     }
 
-    async loadWeb3() {
+    loadWeb3 = async () => {
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum)
             await window.ethereum.enable()
@@ -24,56 +36,12 @@ class App extends Component {
         }
     }
 
-    async loadBlockchainData() {
+    loadAccount = async () => {
         const web3 = window.web3
-            // Load account
+        // Load account
         const accounts = await web3.eth.getAccounts()
-        this.setState({ account: accounts[0] })
-        const networkId = await web3.eth.net.getId()
-        const networkData = Marketplace.networks[networkId]
-        if (networkData) {
-            const marketplace = web3.eth.Contract(Marketplace.abi, networkData.address)
-            this.setState({ marketplace })
-
-            //test
-            this.state.marketplace.methods.createEstate("name3", "adress2", 1 , ["url11", "url21"]).send({ from: this.state.account })
-                .on('error', function(error){
-                    window.alert("le prix doit etre superieur a 10")
-                 })
-                .on('receipt', function(receipt) {
-                    console.log(receipt)
-                    this.setState({ loading: false })
-                })
-
-            const productCount = await marketplace.methods.getAllEstates().call()
-
-            console.log(productCount)
-            //fin test
-
-            //comenter car cela me bloqué
-
-            //this.setState({ productCount })
-            // Load products
-            //for (var i = 1; i <= productCount; i++) {
-            //    const product = await marketplace.methods.products(i).call()
-            //    this.setState({
-            //        products: [...this.state.products, product]
-            //    })
-            //}
-            this.setState({ loading: false })
-        } else {
-            window.alert('Marketplace contract not deployed to detected network.')
-        }
+        this.setState({account: accounts[0]})
     }
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            account: '',
-            productCount: 0,
-            products: [],
-            loading: true
-        }
 
         // j'ai commenter ceci car cela bloquai le code
 
@@ -148,27 +116,17 @@ class App extends Component {
     }
 
     render() {
-        return ( <
-            Fragment >
-            <
-            Navbar account = { this.state.account }
-            /> <
-            main role = "main"
-            className = "mt-5" > {
-                this.state.loading ?
-                <
-                div id = "loader"
-                className = "text-center" > < p className = "text-center" > Loading... < /p></div >
-                :
-                    <
-                    Main
-                products = { this.state.products }
-                createProduct = { this.createProduct }
-                purchaseProduct = { this.purchaseProduct }
-                />
-            } <
-            /main> < /
-            Fragment >
+        return (
+            <Fragment>
+                <Router>
+                    <Navbar account={this.state.account}/>
+                    <Switch>
+                        <Route exact path="/create" component={Create}/>}/>
+                        <Route exact path="/estates" component={Estates}/>}/>
+                        <Route exact path="/" component={Home}/>}/>
+                    </Switch>
+                </Router>
+            </Fragment>
         );
     }
 }
