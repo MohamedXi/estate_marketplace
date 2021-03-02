@@ -34,38 +34,26 @@ contract Marketplace {
         _ownerEstate[msg.sender].push(id);
     }
 
-    function setEstateSale(uint id, uint price) public {
+
+    function updateEstate(uint id, string memory newName, string memory newPostalAddress, uint newPrice, bool newSelling, string[] memory newImages) public{
         require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
-        require(price > 10, "le prix doit etre superieur a 10");
+        require( newPrice > 10, "le prix doit etre superieur a 10" );
         _estates[id]._selling = true;
-    }
-
-    function setPrice(uint id, uint newPrice) public {
-        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
         _estates[id]._price = newPrice;
-    }
-
-    function setPostalAddress(uint id, string memory newPostalAddress) public {
-        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
         _estates[id]._postalAddress = newPostalAddress;
-    }
-
-    function setName(uint id, string memory newName) public {
-        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
         _estates[id]._name = newName;
+        _estates[id]._selling = newSelling;
+        _estates[id]._images = newImages;
     }
 
-    function cancelEstateSale(uint id) public {
-        require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
-        _estates[id]._selling = false;
-    }
 
-    function BuyEstate(uint id) public payable {
+    function buyEstate(uint id) public payable {
         require(_estates[id]._selling, "n'est pas en vente");
 
         address payable seller = _estates[id]._ownerEstate;
 
         uint price = _estates[id]._price;
+
 
         require(msg.value >= price, 'Manque de l\'argent');
 
