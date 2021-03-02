@@ -1,19 +1,31 @@
-import React, { Component, Fragment } from 'react';
+import React, {useEffect, useState, Fragment, Component} from 'react';
 import Web3 from 'web3'
-import logo from '../logo.png';
 import './App.css';
 import Marketplace from '../abis/Marketplace.json'
 import Navbar from './Navbar'
-import Main from './Main'
+import Create from './Create'
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
+import Home from "./Home";
+import Estates from "./Estates";
 
 class App extends Component {
 
-    async componentWillMount() {
-        await this.loadWeb3()
-        await this.loadBlockchainData()
+    constructor(props) {
+        super(props)
+        this.state = {
+            account: '',
+            estateCount: 0,
+            estates: [],
+            loading: true
+        }
     }
 
-    async loadWeb3() {
+    loadWeb3 = async () => {
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum)
             await window.ethereum.enable()
@@ -24,203 +36,31 @@ class App extends Component {
         }
     }
 
-    async loadBlockchainData() {
+    loadAccount = async () => {
         const web3 = window.web3
-            // Load account
+        // Load account
         const accounts = await web3.eth.getAccounts()
-        this.setState({ account: accounts[0] })
-        const networkId = await web3.eth.net.getId()
-        const networkData = Marketplace.networks[networkId]
-        if (networkData) {
-            const marketplace = web3.eth.Contract(Marketplace.abi, networkData.address)
-            this.setState({ marketplace })
-
-            //test
-            this.state.marketplace.methods.createEstate("name3", "adress2", 1 , ["url11", "url21"]).send({ from: this.state.account })
-                .on('error', function(error){
-                    window.alert("le prix doit etre superieur a 10")
-                 })
-                .on('receipt', function(receipt) {
-                    console.log(receipt)
-                    this.setState({ loading: false })
-                })
-
-            const productCount = await marketplace.methods.getAllEstates().call()
-
-            console.log(productCount)
-            //fin test
-
-            //comenter car cela me bloqué
-
-            //this.setState({ productCount })
-            // Load products
-            //for (var i = 1; i <= productCount; i++) {
-            //    const product = await marketplace.methods.products(i).call()
-            //    this.setState({
-            //        products: [...this.state.products, product]
-            //    })
-            //}
-            this.setState({ loading: false })
-        } else {
-            window.alert('Marketplace contract not deployed to detected network.')
-        }
+        this.setState({account: accounts[0]})
     }
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            account: '',
-            productCount: 0,
-            products: [],
-            loading: true
-        }
 
-        // j'ai commenter ceci car cela bloquai le code
-
-        //this.createEstate = this.createProduct.bind(this)
-        //this.setEstateSale = this.purchaseProduct.bind(this)
-    }
-    
-    // creation d'un bien ( estate )
-    // string , int , list string[ ], string
-    createEstate(name, price, image, address) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.createEstate( name, address, price, image ).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("le prix doit etre superieur a 10")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // mettre en vente un bien
-    // int 
-    setEstateSale(id) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.setEstateSale(id).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // changer le prix a un bien ( estate )
-    // int , int
-    setPrice(id, newPrice) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.setPrice(id,newPrice).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien ou le pix doit etre superieur a 10")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // changer l'adresse postal d'un bien
-    // int , string
-    setPostalAddress(id,newPostalAddress) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.setPostalAddress(id,newPostalAddress).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // changer le nom d'un bien
-    // int , string
-    setName(id,newName) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.setName(id,newName).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // annuler la vente d'un bien ( estate )
-    // int
-    cancelEstateSale(id) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.cancelEstateSale(id).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Tu n'est pas propriétaire du bien")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // acheter un bien
-    // int , int
-    BuyEstate(id , price) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.BuyEstate(id).send({ from: this.state.account , value: price })
-            .on('error', function(error){
-                window.alert("n'est pas en vente ou Manque de l'argent")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // rechercher les biens d'une adresse (utilisateur)
-    // string
-    getEstateByAddress(address) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.getEstateByAddress(address).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Propriétaire inconu")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
-    }
-    // rechercher un bien selon son id
-    // int
-    getEstateById(id) {
-        this.setState({ loading: true })
-        this.state.marketplace.methods.getEstateById(id).send({ from: this.state.account })
-            .on('error', function(error){
-                window.alert("Estate inconnu")
-            })
-            .on('receipt', function(receipt) {
-                console.log(receipt)
-                this.setState({ loading: false })
-            })
+    async componentWillMount() {
+        await this.loadWeb3()
+        await this.loadAccount()
     }
 
     render() {
-        return ( <
-            Fragment >
-            <
-            Navbar account = { this.state.account }
-            /> <
-            main role = "main"
-            className = "mt-5" > {
-                this.state.loading ?
-                <
-                div id = "loader"
-                className = "text-center" > < p className = "text-center" > Loading... < /p></div >
-                :
-                    <
-                    Main
-                products = { this.state.products }
-                createProduct = { this.createProduct }
-                purchaseProduct = { this.purchaseProduct }
-                />
-            } <
-            /main> < /
-            Fragment >
+        return (
+            <Fragment>
+                <Router>
+                    <Navbar account={this.state.account}/>
+                    <Switch>
+                        <Route exact path="/create" component={Create}/>}/>
+                        <Route exact path="/estates" component={Estates}/>}/>
+                        <Route exact path="/" component={Home}/>}/>
+                    </Switch>
+                </Router>
+            </Fragment>
         );
     }
 }
