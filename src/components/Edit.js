@@ -68,9 +68,9 @@ class Edit extends Component {
 
     // update un bien (selling c'est si il est en vente ou non )
     // int, string, string, uint, bool, string[]
-    updateEstate(newName, newPostalAddress, newPrice, newSelling, newImages) {
+    updateEstate(id, newName, newPostalAddress, newPrice, newSelling, newImages) {
         this.setState({loading: true})
-        this.state.marketplace.methods.updateEstate(newName, newPostalAddress, newPrice, newSelling, newImages).send({from: this.state.account})
+        this.state.marketplace.methods.updateEstate(id, newName, newPostalAddress, newPrice, newSelling, newImages).send({from: this.state.account})
             .on('error', function (error) {
                 window.alert("tu n'est pas propriétaire ou le prix doit etre superieur a 10")
             })
@@ -78,12 +78,6 @@ class Edit extends Component {
                 console.log(receipt)
                 this.setState({loading: false})
             })
-    }
-
-    handleChange = (propertyName) => (event) => {
-        const {estate} = this.state
-        const newEstate = {...estate, [propertyName]: event.target.value}
-        this.setState({estate: newEstate})
     }
 
     render() {
@@ -105,15 +99,30 @@ class Edit extends Component {
                                     <form className="row g-3" onSubmit={(event) => {
                                         event.preventDefault()
                                         // const id = this.estateId.value
+                                        const id = this.estateId.value
                                         const name = this.estateName.value
                                         const address = this.estatePostalAddress.value
                                         const price = window.web3.utils.toWei(this.estatePrice.value.toString(), 'Ether')
                                         const selling = this.estateSelling.value
                                         const image = this.estateImage.value
                                         const images = [image]
-                                        this.updateEstate(name, address, price, selling, images)
+                                        this.updateEstate(id, name, address, price, selling, images)
                                     }}>
+                                        <input
+                                            hidden
+                                            disabled
+                                            id="estateId"
+                                            ref={(input) => {
+                                                this.estateId = input
+                                            }}
+                                            type="text"
+                                            name="name"
+                                            defaultValue={this.state.estateId._id}
+                                            className="form-control mb-3"
+                                            placeholder="Estate Id"
+                                            required/>
                                         <div className="col-md-6">
+                                            <label htmlFor="estateName" className="form-label">Name</label>
                                             <input
                                                 id="estateName"
                                                 ref={(input) => {
@@ -127,6 +136,7 @@ class Edit extends Component {
                                                 required/>
                                         </div>
                                         <div className="col-md-6">
+                                            <label htmlFor="estatePrice" className="form-label">Price</label>
                                             <input
                                                 id="estatePrice"
                                                 ref={(input) => {
@@ -175,7 +185,7 @@ class Edit extends Component {
                                             </label>
                                         </div>
                                         <div className="col-12 mt-3">
-                                            <button type="submit" className="btn btn-primary">Add New Property</button>
+                                            <button type="submit" className="btn btn-primary">Edit estate</button>
                                         </div>
                                     </form>
                                 </div>

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Truncate from "react-truncate";
 import Web3 from "web3";
 import Marketplace from "../abis/Marketplace.json";
+import {Link} from "react-router-dom";
 
 class Estates extends Component {
 
@@ -62,15 +63,29 @@ class Estates extends Component {
         }
     }
 
+    // acheter un bien
+    // int , int
+    buyEstate(id, price) {
+        this.setState({loading: true})
+        this.state.marketplace.methods.buyEstate(id).send({from: this.state.account, value: price})
+            .on('error', function (error) {
+                window.alert("n'est pas en vente ou Manque de l'argent")
+            })
+            .on('receipt', function (receipt) {
+                console.log(receipt)
+                this.setState({loading: false})
+            })
+    }
+
     render() {
         return (
             <div>
                 <div className="album py-5">
                     <div className="container">
                         <h2 className="fw-light">List of properties</h2>
-                        <p className="lead text-muted">Please add a new property via the form below. Your properties
-                            will be visible to all users of the platform.<br/>
-                            For your security, please do not reveal your private key.</p>
+                        <p className="lead text-muted">
+                            You will find here all the properties available for sale, already sold or not for sale.
+                        </p>
                         <div className="row">
 
                             {
@@ -78,41 +93,46 @@ class Estates extends Component {
                                     return (
                                         <div className="col-sm-6 col-lg-4 mb-4">
                                             <div key={key} className="card border-0 shadow-sm">
-                                                <img
-                                                    src="https://q-xx.bstatic.com/images/hotel/max1024x768/168/168025344.jpg"
-                                                    className="card-img-top" alt="..."/>
+                                                <Link className="link-card" to={"/estate-detail/" + estate._id}>
+                                                    <img
+                                                        src={estate._images[0]}
+                                                        className="card-img-top" alt="..."/>
+                                                </Link>
                                                 <div className="card-body">
-                                                    <h5 className="card-title mb-1">{estate._name}</h5>
-                                                    <h6 className="card-title mb-3">Price
-                                                        : {window.web3.utils.fromWei(estate._price.toString(), 'Ether')} Eth</h6> {/*{window.web3.utils.fromWei(estate.price.toString(), 'Ether')}*/}
-                                                    <p className="card-subtitle mb-2 text-muted small">
-                                                        <i className="bi bi-geo-fill mr-2"/>
-                                                        {estate._postalAddress}
-                                                    </p>
-                                                    <p className="card-subtitle mb-2 text-muted small">
-                                                        <i className="bi bi-person-fill mr-2"/>
-                                                        <Truncate className="small" width={300} lines={1}
-                                                                  ellipsis={<span>...</span>}>
-                                                            {/*{estate.owner}*/} {estate._ownerEstate}
-                                                        </Truncate>
-                                                    </p>
-                                                    <p className="card-text">Some quick example text to build on the
-                                                        card
-                                                        title and make up the bulk of the card's content.</p>
-                                                    <div className="row mb-3">
-                                                        <div className="col-4 small">
-                                                            <i className="bi bi-grid-1x2 mr-2"/>
-                                                            Type : Apartment
+                                                    {/*<Link className="link-card" to={"/estate-detail/" + estate._id}>*/}
+                                                        <h5 className="card-title mb-1">{estate._name}</h5>
+                                                        <h6 className="card-title mb-3">Price
+                                                            : {window.web3.utils.fromWei(estate._price.toString(), 'Ether')} Eth</h6> {/*{window.web3.utils.fromWei(estate.price.toString(), 'Ether')}*/}
+                                                        <p className="card-subtitle mb-2 text-muted small">
+                                                            <i className="bi bi-geo-fill mr-2"/>
+                                                            {estate._postalAddress}
+                                                        </p>
+                                                        <p className="card-subtitle mb-2 text-muted small">
+                                                            <i className="bi bi-person-fill mr-2"/>
+                                                            <Truncate className="small" width={300} lines={1}
+                                                                      ellipsis={<span>...</span>}>
+                                                                {/*{estate.owner}*/} {estate._ownerEstate}
+                                                            </Truncate>
+                                                        </p>
+                                                        <p className="card-text">{estate._selling.toString()} Some quick
+                                                            example text to build on the
+                                                            card
+                                                            title and make up the bulk of the card's content.</p>
+                                                        <div className="row mb-3">
+                                                            <div className="col-4 small">
+                                                                <i className="bi bi-grid-1x2 mr-2"/>
+                                                                Type : Apartment
+                                                            </div>
+                                                            <div className="col-4 small">
+                                                                <i className="bi bi-border-inner mr-2"/>
+                                                                number of rooms : 4
+                                                            </div>
+                                                            <div className="col-4 small">
+                                                                <i className="bi bi-arrows-fullscreen mr-2"/>
+                                                                Surface: 20.00 m2
+                                                            </div>
                                                         </div>
-                                                        <div className="col-4 small">
-                                                            <i className="bi bi-border-inner mr-2"/>
-                                                            number of rooms : 4
-                                                        </div>
-                                                        <div className="col-4 small">
-                                                            <i className="bi bi-arrows-fullscreen mr-2"/>
-                                                            Surface: 20.00 m2
-                                                        </div>
-                                                    </div>
+                                                    {/*</Link>*/}
                                                     <div className="row">
                                                         {/*
                                                         {
@@ -136,7 +156,13 @@ class Estates extends Component {
                                                         {
                                                             (estate._selling === true)
                                                                 ? <div className="col-12 mt-2">
-                                                                    <button className="btn btn-sm btn-primary btn-block">
+                                                                    <button
+                                                                        name={estate._id}
+                                                                        value={estate._price}
+                                                                        onClick={(event) => {
+                                                                            this.buyEstate(event.target.name, event.target.value)
+                                                                        }}
+                                                                        className="btn btn-sm btn-primary btn-block">
                                                                         Buy Now
                                                                     </button>
                                                                 </div>

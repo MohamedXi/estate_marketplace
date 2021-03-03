@@ -14,6 +14,7 @@ import Home from "./Home";
 import Estates from "./Estates";
 import MyEstates from "./MyEstates";
 import Edit from "./Edit";
+import EstateDetail from "./EstateDetail";
 
 class App extends Component {
 
@@ -56,20 +57,6 @@ class App extends Component {
     //this.setEstateSale = this.purchaseProduct.bind(this)
 
 
-    // acheter un bien
-    // int , int
-    buyEstate(id, price) {
-        this.setState({loading: true})
-        this.state.marketplace.methods.buyEstate(id).send({from: this.state.account, value: price})
-            .on('error', function (error) {
-                window.alert("n'est pas en vente ou Manque de l'argent")
-            })
-            .on('receipt', function (receipt) {
-                console.log(receipt)
-                this.setState({loading: false})
-            })
-    }
-
     // rechercher les biens d'une adresse (utilisateur)
     // string
     getEstateByAddress(address) {
@@ -84,26 +71,13 @@ class App extends Component {
             })
     }
 
-    // rechercher un bien selon son id
-    // int
-    getEstateById(id) {
-        this.setState({loading: true})
-        this.state.marketplace.methods.getEstateById(id).send({from: this.state.account})
-            .on('error', function (error) {
-                window.alert("Estate inconnu")
-            })
-            .on('receipt', function (receipt) {
-                console.log(receipt)
-                this.setState({loading: false})
-            })
-    }
-
     render() {
         return (
             <Fragment>
                 <Router>
                     <Navbar account={this.state.account}/>
                     <Switch>
+                        {/*<Route exact path="/estate-detail/:id" component={EstateDetail}/>}/>*/
                         <Route exact path="/edit/:id" component={Edit}/>}/>
                         <Route exact path="/myestates" component={MyEstates}/>}/>
                         <Route exact path="/create" component={Create}/>}/>

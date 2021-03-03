@@ -38,12 +38,15 @@ contract Marketplace {
     function updateEstate(uint id, string memory newName, string memory newPostalAddress, uint newPrice, bool newSelling, string[] memory newImages) public{
         require(_estates[id]._ownerEstate == msg.sender, "tu n'est pas proprietaire du bien");
         require( newPrice > 10, "le prix doit etre superieur a 10" );
-        _estates[id]._selling = true;
-        _estates[id]._price = newPrice;
-        _estates[id]._postalAddress = newPostalAddress;
-        _estates[id]._name = newName;
-        _estates[id]._selling = newSelling;
-        _estates[id]._images = newImages;
+        estate memory create = _estates[id];
+        create._selling = newSelling;
+        create._price = newPrice;
+        create._postalAddress = newPostalAddress;
+        create._name = newName;
+        create._ownerEstate = msg.sender;
+        create._images = newImages;
+        _estates[id] = create;
+        _idEstate[id]= create;
     }
 
 

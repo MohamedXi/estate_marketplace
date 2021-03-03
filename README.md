@@ -24,9 +24,8 @@ Maintenant que nous disposons d’une blockchain, nous devons configurer notre e
 Installons maintenant le Truffle Framework, qui fournit une suite d'outils pour développer des contacts intelligents Ethereum avec le langage de programmation Solidity.
 
 On pout installer Truffle avec NPM en ligne de commande comme ceci : 
-Remarque : Il important d’utiliser cette version précise.
 
-`$ sudo npm install -g truffle@5.0.5`
+`$ sudo npm install -g truffle`
 
 ###### d.	Metamask Ethereum Wallet
 Il existe plusieurs Ethereum Wallet. Cela-dait, Nous utiliserons l'extension Metamask pour Google Chrome. Pour installer Metamask, il faut le [télécharger dans Chrome Web Store](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=fr "télécharger dans Chrome Web Store").

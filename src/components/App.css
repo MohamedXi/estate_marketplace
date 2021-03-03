@@ -1,1 +1,9 @@
 /* Styles go here */
+.link-card {
+    color: #000;
+}
+
+.link-card:hover {
+    color: #000;
+    text-decoration: none;
+}
